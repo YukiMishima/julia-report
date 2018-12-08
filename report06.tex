@@ -1,0 +1,133 @@
+\documentclass[12pt]{ltjsarticle}
+
+\usepackage{amsmath}  %文字をイタリックにしない
+\usepackage{graphicx}
+\usepackage{cases}
+
+\begin{document}
+\begin{titlepage}
+\title{Report No.06: 保存量について}
+\author{まるまる研 B4 \\ なまえ}
+\date{2018/12/19}
+\maketitle
+%\thispagestyle{empty}
+\tableofcontents
+
+\end{titlepage}
+
+\section{はじめに}
+Volterraモデルとその保存量Gにおいて構造保存スキームはなぜ高精度に保存性を
+保つことができるのかについて考える. 
+
+今回のVolterraモデルの式は以下の常微分方程式である.
+\begin{eqnarray}
+    \left\{
+      \begin{array}{l}
+         \dfrac{du}{dt} = u(-C_1 v + (D_1 - E)) \\
+         \dfrac{dv}{dt} = v(C_2 u - (D_2 + E))
+          \label{volterra}
+      \end{array}
+    \right.
+\end{eqnarray}
+この式をそれぞれu,vで割ると、
+\begin{eqnarray}
+    \left\{
+      \begin{array}{l}
+         \dfrac{1}{u}\dfrac{du}{dt} = -C_1 v + (D_1 - E) \\
+         \dfrac{1}{v}\dfrac{dv}{dt} = C_2 u - (D_2 + E) 
+  \label{volterra2}
+\end{array}
+\right.
+\end{eqnarray}
+となる.この式について、
+\begin{eqnarray}
+    \left\{
+      \begin{array}{l}
+         U := log(u) \\
+         V := log(v)
+  \label{change}
+\end{array}
+\right.
+\end{eqnarray}
+という変数変換を用いてVolterraモデルを書き改めると、
+\begin{eqnarray}
+    \left\{
+      \begin{array}{l}
+  \dfrac{dU}{dt} = -C_1 e^V + (D_1 - E) \\
+  \dfrac{dV}{dt} = C_2 e^U - (D_2 + E)
+  \label{Volterra}
+\end{array}
+\right.
+\end{eqnarray}
+を得る. そして、保存量Gは
+\begin{equation}
+  G(u,v) = C_2 u - (D_2 + E)log(u) + C_1 v - (D_1 - E)log(v)
+  \label{G(u,v)}
+\end{equation}
+と表される量である.
+
+\subsection{構造保存法について}
+構造保存とは、「微分方程式の解関数が持つ数学的性質を離散的に再現する数値スキーム」
+である. \cite{furihata} 微分方程式の持つ散逸性や保存性を離散的に再現するためには、散逸性や保存性を
+数学的に示す関係式を、適切に離散化し、その際に要請される制限から数値スキームを
+得ればよい. \cite{tuchiya}
+
+\section{Gの保存性を数学的に示す}
+先に述べた通り、構造保存スキームを得るための準備として、まず保存性が保たれることを
+数学的に示す関係式を得ることにする. したがって、u,vがVolterraモデルである
+常微分方程式の厳密解であるとき、保存量Gの時間変化が0になることを確かめる. \\
+式\ref{G(u,v)}より
+\begin{equation}
+  \frac{dG(u,v)}{dt} = C_2 \frac{du}{dt}-(D_2 + E)\frac{dlog(u)}{dt} 
+                        +C_1\frac{dv}{dt}-(D_1 - E)\frac{dlog(v)}{dt}
+    \label{dG/dt}
+\end{equation}
+この式に式\ref{volterra}、式\ref{change}、式\ref{Volterra}、を代入して、
+\begin{equation*}
+    \begin{split}
+        \frac{dG(u,v)}{dt} = & C_2 u (-C_1 v + (D_1 - E))-(D_2 + E)(-C_1 v + D_1 -E) \\
+        &+C_1 v(C_2 u - D_2 -E)-(D_1 - E)(C_2 u - D_2 -E)  \\
+        = &-C_1 C_2 uv + C_2 u D_1 - C_2 uE \\
+        &+ C_1 D_2 v - D_1 D_2 +E D_2 + C_1 v E + E D_1 + E^2 \\
+        &+ C_1 C_2 uv -C_1 D_2 v - C_1 v E \\
+        &- C_2 D_1 u + D_1 D_2 + D_1 E + C_2 uE - E D_2 - E^2 \\
+        = &0
+    \end{split}
+  \end{equation*}
+よって確かに保存量Gは保存されることが確認できた. また、保存性が保たれることを
+示す数学的な関係式は式\ref{dG/dt}である. 
+
+\section{関係式の離散化}
+次に、得られた関係式(式\ref{dG/dt})を離散化することを考える. \\
+離散的保存量$\text{G}_\text{n}$を定義し、差文商を用いて以下のように変形を行う. 
+\begin{equation*}
+    \begin{split}
+        \frac{G_{n+1}-G_n}{\Delta t} = & C_2 \frac{d(exp)}{d(U_{n+1}-U_n)}\frac{U_{n+1}-U_n}{\Delta t} - (D_2 + E)\frac{U_{n+1}-U_n}{\Delta t} \\
+        & C_1\frac{d(exp)}{d(V_{n+1}-V_n)}\frac{V_{n+1}-V_n}{\Delta t} - (D_1 - E)\frac{V_{n+1}-V_n}{\Delta t}　\\
+        = & \left\{  C_2 \frac{d(exp)}{d(U_{n+1}-U_n)} - (D_2 + E) \right\} \frac{U_{n+1}-U_n}{\Delta t} \\
+        & \left\{  C_1 \frac{d(exp)}{d(V_{n+1}-V_n)} - (D_1 - E) \right\} \frac{V_{n+1}-V_n}{\Delta t}
+    \end{split}
+\end{equation*}
+したがって、離散的保存量$\text{G}_\text{n}$が保存される、
+すなわち$ \frac{G_{n+1}-G_n}{\Delta t} = 0 $が成り立つためには、
+\begin{subnumcases}
+    {}
+    \frac{U_{n+1}-U_n}{\Delta t}= - \left\{  C_1 \frac{d(exp)}{d(V_{n+1}-V_n)} - (D_1 - E) \right\} & \\
+    \frac{V_{n+1}-V_n}{\Delta t}= C_2 \frac{d(exp)}{d(U_{n+1}-U_n)} - (D_2 + E) &
+    \label{scheme}
+  \end{subnumcases}
+であればよい. これは、今回用いた構造保存スキームそのものである.
+
+\section{考察}
+以上の議論より、このスキーム(式\ref{scheme})は保存量Gを離散的に保存する際に
+要請される関係性であるため、これを用いて行った計算は保存量Gを良く保つのだと
+考えられる.
+
+\begin{thebibliography}{2}
+    \bibitem{furihata} 降旗大介(2013) 「構造保存数値解法入門-離散変分導関数法-」(応用数学勉強会 2013 資料)
+    \bibitem{tuchiya} 土屋卓也(2017) 「Einstein方程式の適切な離散式構築について」(若手による重力・宇宙論研究会 資料)
+\end{thebibliography}
+
+
+\end{document}
+
