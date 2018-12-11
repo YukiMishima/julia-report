@@ -11,7 +11,7 @@
 \date{2018/12/19}
 \maketitle
 %\thispagestyle{empty}
-\tableofcontents
+% \tableofcontents
 
 \end{titlepage}
 
@@ -32,7 +32,7 @@
 \end{eqnarray}
 と表せる。
 
-\section{保存性の確認}
+\section{エネルギー保存性の確認}
 保存量であるエネルギーが運動方程式(式\ref{newton})に従うと保存されることを確かめる。
 つまり、エネルギーの時間微分($\text{dE}/\text{dt}$)がゼロになることを確かめればよい。
 \begin{equation*}
@@ -60,6 +60,7 @@ $\text{t}=\text{n}\Delta\text{t}$での数値解$\text{h}_\text{n}$,$\text{v}_\t
 と定義する。このエネルギーが時間方向に保存されると仮定すると、
 \begin{equation}
     \frac{E_{d,n+1}-E_{d,n}}{\Delta t} = 0
+    \label{ene0}
 \end{equation}
 が成り立つはずである。したがってこの式の左辺を式\ref{energyd}によって展開し、0にすることを考える。
 \begin{equation*}
@@ -72,4 +73,24 @@ $\text{t}=\text{n}\Delta\text{t}$での数値解$\text{h}_\text{n}$,$\text{v}_\t
         +mg\frac{h_{n+1}-h_n}{\Delta t}
 \end{split}
 \end{equation*}
+ここで、
+\begin{equation}
+    \frac{h_{n+1}-h_n}{\Delta t}=\frac{v_{n+1}+v_n}{2}
+    \label{scheme1}
+\end{equation}
+であるとすると、上記の式変形はさらに以下のように変形することができる。
+\begin{equation*}
+        \frac{E_{d,n+1}-E_{d,n}}{\Delta t} =　\frac{h_{n+1}-h_n}{\Delta t}\left(\frac{v_{n+1}-v_n}{\Delta t}m
+        + \frac{h_{n+1}+h_n}{2}k + mg\right)
+\end{equation*}
+式\ref{ene0}が成り立つためには上式の右辺のカッコ内が0になる必要があるので、以下の等式が成り立つ。
+\begin{equation}
+    \frac{v_{n+1}-v_n}{\Delta t}　= -\frac{k}{m} \frac{h_{n+1}+h_n}{2} - g
+    \label{scheme2}
+\end{equation}
+\section{考察}
+以上の議論より、離散エネルギー$E_d$が保存されるためには、式\ref{scheme1}と式\ref{scheme2}が要請される
+ことが分かった。逆に、これらのスキームに則って計算したものは離散エネルギーを保存するということであり、
+授業で用いたスキームはまさに式\ref{scheme1}と式\ref{scheme2}であるため、数値計算においてEをよく
+保存したのだと考えられる。
 \end{document}
