@@ -1,0 +1,75 @@
+\documentclass[12pt]{ltjsarticle}
+
+\usepackage{amsmath}  %文字をイタリックにしない
+\usepackage{graphicx}
+\usepackage{cases}
+
+\begin{document}
+\begin{titlepage}
+\title{Report No.07　\\ Newton運動方程式における構造保存解法}
+\author{まるまる研 B4 \\ なまえ}
+\date{2018/12/19}
+\maketitle
+%\thispagestyle{empty}
+\tableofcontents
+
+\end{titlepage}
+
+\section{はじめに}
+時間方向に二階微分が入る時間発展問題の常微分方程式の例としてNewton運動方程式が挙げられる。
+この解き方について考える。
+
+まず、Newton運動方程式を具体的に以下のように定義する。
+\begin{eqnarray}
+    m\frac{d^2 h}{dt^2} = -kh-mg
+    \label{newton}
+\end{eqnarray}
+ただし、バネ定数を k, 重りの重さを m, 重力定数を g とすれば、重りの高さ位置 h(t)(t:時間) としている。
+また、この系の保存量はエネルギー保存則より、
+\begin{eqnarray}
+    E(h(t)) = \frac{1}{2}m\left(\frac{dt}{dt}\right)^2 + \frac{1}{2}kh^2 + mgh
+    \label{energy}
+\end{eqnarray}
+と表せる。
+
+\section{保存性の確認}
+保存量であるエネルギーが運動方程式(式\ref{newton})に従うと保存されることを確かめる。
+つまり、エネルギーの時間微分($\text{dE}/\text{dt}$)がゼロになることを確かめればよい。
+\begin{equation*}
+    \begin{split}
+    \frac{dE(h(t))}{dt} = &\frac{1}{2}m\frac{d}{dt}\left(\frac{dt}{dt}\right)^2 
+    + \frac{1}{2}k・2h\frac{dh}{dt} + mg\frac{dh}{dt} \\
+         = & \frac{1}{2}m・2\frac{d^2 h}{dt^2}\left(\frac{dh}{dt}\right)+kh\frac{dh}{dt}+mg\frac{dh}{dt}\\
+         = & \frac{dh}{dt}\left(m\frac{d^2}{dt^2}+kh+mg\right) \\
+         = & \frac{dh}{dt}・0 \\
+         = & 0
+\end{split}
+\end{equation*}
+3行目から4行目の変換には式\ref{newton}を用いた。以上より、式\ref{energy}で表されるエネルギーは
+確かに保存量であることが数学的に示された。
+
+\section{離散化した場合のエネルギー保存性}
+次に、離散化した場合のエネルギー$E_d$の保存性について考える。ここで、v=dv/dtという従属変数を
+新たに導入し、この離散化したエネルギーは、ある時点
+$\text{t}=\text{n}\Delta\text{t}$での数値解$\text{h}_\text{n}$,$\text{v}_\text{n}$に
+対して、
+\begin{eqnarray}
+    E_d (h_n,t_n) = \frac{1}{2}mv_n^2 + \frac{1}{2}kh_n^2 + mgh_n
+    \label{energyd}
+\end{eqnarray}
+と定義する。このエネルギーが時間方向に保存されると仮定すると、
+\begin{equation}
+    \frac{E_{d,n+1}-E_{d,n}}{\Delta t} = 0
+\end{equation}
+が成り立つはずである。したがってこの式の左辺を式\ref{energyd}によって展開し、0にすることを考える。
+\begin{equation*}
+    \begin{split}
+        \frac{E_{d,n+1}-E_{d,n}}{\Delta t} =&　\frac{1}{2}m\frac{v_{n+1}^2 - v_n^2}{\Delta t}
+        + \frac{1}{2}k\frac{h_{n+1}^2 - h_n^2}{\Delta t} + mg\frac{h_{n+1}-h_n}{\Delta t} \\
+        = &\frac{1}{2}m\frac{(v_{n+1}+v_n)(v_{n+1}-v_n)}{\Delta t}+\frac{1}{2}k\frac{(h_{n+1}+h_n)(h_{n+1}-h_n)}{\Delta t} \\
+        &+mg\frac{h_{n+1}-h_n}{\Delta t} \\
+        = &\frac{v_{n+1}-v_n}{\Delta t}\frac{v_{n+1}+v_n}{2}m+\frac{h_{n+1}-h_n}{\Delta t}\frac{h_{n+1}+h_n}{2}k
+        +mg\frac{h_{n+1}-h_n}{\Delta t}
+\end{split}
+\end{equation*}
+\end{document}
