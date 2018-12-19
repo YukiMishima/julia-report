@@ -1,0 +1,66 @@
+\documentclass[12pt]{ltjsarticle}
+
+\usepackage{amsmath}  %文字をイタリックにしない
+\usepackage{graphicx}
+\usepackage{cases}
+\usepackage{tcolorbox}
+
+\begin{document}
+\begin{titlepage}
+\title{Report No.08　\\ Lorenz方程式と数値計算}
+\author{まるまる研 B4 \\ なまえ}
+\date{2018/12/19}
+\maketitle
+%\thispagestyle{empty
+% \tableofcontents
+
+\end{titlepage}
+
+\section{目的}
+Lorenz方程式の数値計算を通して、Lorenz方程式の数学的性質とそれが数値計算に与える影響について考察する。
+
+\section{Lorenz方程式について}
+Lorenz方程式とは以下のような常微分方程式である。パラメータはザルツマンのパラメータ、$\sigma$=10,r=28,b=8/3を採用する。
+\begin{eqnarray}
+    \begin{cases}
+        \frac{du}{dt} = \sigma(-u+v), & \\
+        \frac{dv}{dt} = u(-w+r)-v, & \\
+        \frac{dw}{dt} = uv-bw. &
+    \end{cases}
+    \label{newton}
+\end{eqnarray}
+
+線形常微分方程式では、変数がいくつあろうと解は、振動するか、収束するか、発散するかのいずれかの結果になる。
+しかしながら、非線形常微分方程式であるLorenz方程式では、このいずれにもならず、不規則に振動を
+続ける。これをカオスと呼ぶ。
+
+\subsection{カオスの特徴}
+カオスの特徴の一つとして、「初期値鋭敏性」が挙げられる。“ある場所で蝶が羽ばたいたことが原因で
+数週間後に底と遠く離れた場所で竜巻が起こるかもしれない”
+ということを比喩したバタフライ効果と同じように、非常に小さな初期値の変化がその後の値を大きく
+変えてしまうという性質である。初期値鋭敏性の定義は以下の通りである。\\
+\begin{tcolorbox}
+    区間$J$に対し写像$f:J \rightarrow J$が与えられており、$x$は$J$の点であるとする.\\
+    いま任意の$\delta$に対して、
+    \begin{equation*}
+        |x-y| < \delta \ かつ \ |f^{[n]}(x) - f^{[n]}(y)| > \varepsilon
+    \end{equation*}
+    となるような$J$に含まれる数$y$, 正の整数$n$, $\varepsilon(>0)$が存在するとき, $f$は
+    $x$で初期値鋭敏性を持つあるいは$x$に鋭敏に依存するという. $f$が$J$のすべての点xで初期値鋭敏性を
+    もつとき、$f$は$J$で初期値鋭敏性を持つ, あるいは$J$で鋭敏な依存性を持つという.
+\end{tcolorbox}
+
+十分近接した2点から出発した2つの軌道が時間の経過とともに乖離する度合いを示す量がリャプノフ指数
+である。\\
+\begin{tcolorbox}
+    $J$を閉区間とし、$f:J \rightarrow J$は$J$で連続微分可能であるとする. $J$の与えられた点$x$
+    に対し, $\lambda(x)$を, その極限が存在するとき,
+    \begin{equation*}
+        \lambda(x) \equiv \lim_{x \to \infty} \frac{1}{n}\text{ln}\left(f^{[n]}\right)'(x)|
+    \end{equation*}
+    で定義する. このとき, $\lambda(x)$を点$x$における$f$におけるリャプノフ指数という.\\
+    $\lambda(x)$が$x$に依存しないとき, $\lambda(x)$を$\lambda$と記し, $f$のリャプノフ指数という.
+    
+\end{tcolorbox}
+
+\end{document}
