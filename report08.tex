@@ -54,69 +54,70 @@ Lorenz方程式とは以下のような常微分方程式である。パラメ�
     \caption{Lorenz方程式の近似解}
         \end{center}
 \end{figure}
+
 また、この軌跡がプロットされていく様子のアニメーションは別ファイルにあるrolenz.gifである。
 このソースコードは以下のとおりである。
 \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, frame=single]
-    function f(U)   # ローレンツ方程式を定義
-        u, v, w = U
-        
-        return [
-            σ * (- u + v)
-            u * (- w + r) - v
-            u*v - b*w
-        ]
-        
+function f(U)   # ローレンツ方程式を定義
+    u, v, w = U
+    
+    return [
+        σ * (- u + v)
+        u * (- w + r) - v
+        u*v - b*w
+    ]
+    
+end
+
+const σ, r, b = 10, 28, 8/3 　# パラメータを指定
+Δt = 0.01
+
+function make_init(U)  # Runge-Kuttaを使って3段法に必要な6つの値を返す関数
+    V = copy(U) 
+    sq_V = copy(U)
+    sq_f = f(U)
+    
+    for n in 1:2
+        V = RK(V)
+        sq_V = hcat(sq_V, V)
+        sq_f = hcat(sq_f, f(V))
     end
     
-    const σ, r, b = 10, 28, 8/3 　# パラメータを指定
-    Δt = 0.01
-    
-    function make_init(U)  # Runge-Kuttaを使って3段法に必要な6つの値を返す関数
-        V = copy(U) 
-        sq_V = copy(U)
-        sq_f = f(U)
-        
-        for n in 1:2
-            V = RK(V)
-            sq_V = hcat(sq_V, V)
-            sq_f = hcat(sq_f, f(V))
-        end
-        
-        return sq_V, sq_f
-    end
-    
-    function LM(U, vF)  # 線形多段階法+予測子修正子法
-        Up = U + Δt * ( vF * [23/12, -4/3, 5/12] )
-        fp = f(Up)
-        Up = U + Δt * ( hcat(fp, vF) * [3/8, 19/24, -5/24, 1/24] )
-        fp = f(Up)
-        return Up, hcat(fp, vF[:,1:2])
-    end
-    
-    sq_U, sq_f = make_init(U0)  # 初期値を生成
-    t_sq = Δt * [1:3003]
-    
-    U = sq_U[:,3]
-    vF = copy(sq_f)
-    
-    for i in 1:3000
-        U, vF = LM(U, vF)
-        sq_U = hcat(sq_U, U)
-    end
-    
-    using Plots
-    gr()
-    using Interact
-    
-    X, Y, Z = sq_U[1,:], sq_U[2,:], sq_U[3,:] # X,Y,Z座標を設定
-    plot(X, Y, Z, color="white")
-    
-    @gif for i in 2999　# 細かな軌跡を追加でプロットし、アニメーションを作成
-        x = sq_U[1,i:i+1]
-        y = sq_U[2,i:i+1]
-        z = sq_U[3,i:i+1]
-        plot!(x,y,z, color="red",leg=false)
-    end
+    return sq_V, sq_f
+end
+
+function LM(U, vF)  # 線形多段階法+予測子修正子法
+    Up = U + Δt * ( vF * [23/12, -4/3, 5/12] )
+    fp = f(Up)
+    Up = U + Δt * ( hcat(fp, vF) * [3/8, 19/24, -5/24, 1/24] )
+    fp = f(Up)
+    return Up, hcat(fp, vF[:,1:2])
+end
+
+sq_U, sq_f = make_init(U0)  # 初期値を生成
+t_sq = Δt * [1:3003]
+
+U = sq_U[:,3]
+vF = copy(sq_f)
+
+for i in 1:3000
+    U, vF = LM(U, vF)
+    sq_U = hcat(sq_U, U)
+end
+
+using Plots
+gr()
+using Interact
+
+X, Y, Z = sq_U[1,:], sq_U[2,:], sq_U[3,:] # X,Y,Z座標を設定
+plot(X, Y, Z, color="white")
+
+@gif for i in 2999　# 細かな軌跡を追加でプロットし、アニメーションを作成
+    x = sq_U[1,i:i+1]
+    y = sq_U[2,i:i+1]
+    z = sq_U[3,i:i+1]
+    plot!(x,y,z, color="red",leg=false)
+end
     \end{lstlisting}
 
 線形常微分方程式では、変数がいくつあろうと解は、振動するか、収束するか、発散するかのいずれかの結果になる。
@@ -182,8 +183,10 @@ end
 \end{lstlisting}
 このソースコードによって生成したアニメーションがrolenz by RK.gifである。
 赤線の多段階法+予測子修正子法により求めた解と、緑線のRunge-Kutta法により求めた解は
-異なる様子を描くことが確認できた。
-したがって、
+異なる軌道を描くことが確認できた。したがって、丸め誤差や近似誤差により真の解と全く
+異なる軌道を描く可能性があることは、Lorenz方程式の数値計算において忘れてはならない性質
+であると言えるだろう。
+
 \begin{thebibliography}{1}
     \bibitem{chaos} デニー・グーリック著, 前田恵一、原山卓久訳,
     『カオスとの遭遇 －力学系への数学的アプローチ－』第2版 (産業図書株式会社,1995)
